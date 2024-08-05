@@ -1,0 +1,27 @@
+parameters:
+    lightsaml_sp.route.discovery: lightsaml_sp.discovery
+    lightsaml.route.login_check: lightsaml_sp.login_check
+
+services:
+    LightSaml\SpBundle\Controller\DefaultController:
+        public: true
+        tags: [ 'controller.service_arguments' ]
+        calls:
+            - [ setContainer, [ "@service_container" ] ]
+        arguments:
+            $metadataProfileBuilder: '@ligthsaml.profile.metadata'
+            $profileLoginFactory: '@ligthsaml.profile.login_factory'
+            $storeContainer: "@lightsaml.container.store"
+            $partyContainer: "@lightsaml.container.party"
+            $discoveryRoute: "%lightsaml_sp.route.discovery%"
+
+    lightsaml_sp.username_mapper.simple:
+        class: LightSaml\SpBundle\Security\User\SimpleUsernameMapper
+        arguments:
+            - []
+
+    lightsaml_sp.attribute_mapper.simple:
+            class: LightSaml\SpBundle\Security\User\SimpleAttributeMapper
+
+    lightsaml_sp.token_factory:
+        class: LightSaml\SpBundle\Security\Authentication\Token\SamlSpTokenFactory
